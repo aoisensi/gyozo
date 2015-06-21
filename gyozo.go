@@ -37,13 +37,13 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", indexHandler).Methods("GET")
 	r.HandleFunc("/upload", uploadHandler).Methods("POST")
-	r.HandleFunc("/image/{id:[0-9a-f]{8}}", imageHandler).Methods("GET")
+	r.HandleFunc("/{id:[0-9a-f]{8}}", imageHandler).Methods("GET")
 	http.Handle("/", r)
 	http.ListenAndServe(envHost+":"+envPort, nil)
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("index"))
+	http.Error(w, http.StatusText(404), 404)
 }
 
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
@@ -75,7 +75,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 	png.Encode(file, img)
-	http.Redirect(w, r, envRoot+"/image/"+fn, 302)
+	http.Redirect(w, r, envRoot+"/"+fn, 302)
 }
 
 func imageHandler(w http.ResponseWriter, r *http.Request) {
